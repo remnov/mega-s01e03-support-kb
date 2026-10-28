@@ -1,0 +1,7 @@
+{
+  "name": "mega-s01e03-support-kb",
+  "private": true,
+  "type": "module",
+  "scripts": { "build": "node scripts/build.mjs", "analyze": "node scripts/analyze.mjs" },
+  "dependencies": { "esbuild": "0.28.2", "mdsvex": "0.12.8", "svelte": "5.57.3" }
+}

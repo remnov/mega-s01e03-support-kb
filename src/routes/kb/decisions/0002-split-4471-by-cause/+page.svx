@@ -1,0 +1,113 @@
+---
+layout: runbook
+title: '0002 · Split #4471 by cause'
+owner: remnov
+status: accepted
+reviewed: 2026-10-28
+signature: 'Remigiusz Nowacki + Codex · S01E03'
+---
+
+<script>
+  import CauseTable from '#lib/kb/CauseTable.svelte';
+  import QueueTimeline from '#lib/kb/QueueTimeline.svelte';
+  import DedupeExplorer from '#lib/kb/DedupeExplorer.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+  import Callout from '#lib/kb/Callout.svelte';
+</script>
+
+**Replaces [decision 0001](/kb/decisions/0001-dedupe-by-subject) for date-report triage.**
+The accepted record stays intact. This review uses the 4 October 2026 export;
+its counts describe that snapshot, not the live support queue.
+
+## What #4471 contains
+
+The incident page says one issue and one queued fix. The table below runs the exported
+classification code against distinct report IDs and tenant settings. It separates a shared
+parser defect from a booking-form hint defect. Intake tags and browser locale are guesses;
+the tenant's locale, form version, and the report's channel determine this classification.
+
+<CauseTable ticket={4471} />
+
+### Shared month-first parser
+
+The shared parser reads dates month first even for day-first tenants. App and email reports,
+and reports through booking-v2, reach this cause. The same applies to non-form reports from
+booking-v3 tenants. For Harbour Dental (`en-GB`, booking-v2), entering `07/04/2026` for
+7 April produces 4 July. R-41200 records that reversal. Fix the parser to use the tenant's
+specified date order, and reject ambiguous input when that order is unknown.
+
+See the [parser ticket](https://github.com/remnov/mega-s01e03-support-kb/issues/1).
+Its count follows the exported classifier, including the unresolved reports below.
+
+### Booking-v3 prints the wrong hint
+
+For a day-first tenant, booking-v3 prints `MM/DD/YYYY`, but the form reads the input in the
+tenant's day-first order. Following the hint reverses month and day. This path requires
+**channel `form`, booking-v3, and a day-first tenant**. Copper Studio, Alder Physio, and
+Pale Harbour meet those tenant conditions. R-41230 is one example from Copper Studio.
+Use a hint consistent with the tenant's parser and test the displayed hint and submitted date
+together. Fixing the shared parser alone does not correct this form's instructions.
+
+See the [form-hint ticket](https://github.com/remnov/mega-s01e03-support-kb/issues/2).
+
+<Callout>
+These are separate fixes. Matching words in a subject do not establish a shared cause.
+</Callout>
+
+## What the grouping does not prove
+
+The classifier uses tenant configuration and channel; it does not inspect the report body.
+The desk notes flag R-41202, R-41209, R-41236, R-41344, and R-41620. All remain counted under
+`parser` by the exported rule. They are not proof of the parser defect: their bodies describe
+one-day offsets, an invite arriving before its booking, or different days in different cities.
+Keep them visible and investigate the original timestamp, tenant timezone, recipient timezone,
+expected date, and actual date before declaring their cause resolved. Do not invent a confirmed
+third defect from these symptoms or silently remove them from the count.
+
+The raw export has overlapping pages. `uniqueById` counts each report ID once before filtering
+for #4471; adding raw row counts would overstate the number of reports. The table's intake-tag
+breakdown also exposes disagreements between intake's guess and the tenant-based cause.
+
+## When reports arrived and when the desk merged them
+
+<QueueTimeline ticket={4471} />
+
+Reports began arriving in April. The large merge bar in early July is a filing event,
+not the start of the incident. Compare **received** with **merged** before calling a spike an
+increase in failures. New reports continue after the bulk merge; “known” does not mean fixed.
+
+## Replacement triage rule
+
+1. Read the body. Record the tenant, channel, expected date, actual date, locale, and form version.
+2. Look up the tenant's settings; do not substitute the reporter's browser locale or intake tag.
+3. For the date paths supported by this export, use `causeOf` and compare with `sameCause`.
+4. Merge only when the cause is known and matches. A matching subject alone is insufficient.
+5. If the tenant is missing, the cause is unknown, or the symptom contradicts the assigned cause,
+   keep the report for investigation. Preserve its original ID and evidence when moving it.
+6. Count distinct report IDs. Link each cause to its own engineering ticket and check incoming
+   reports again after a fix; do not mark the whole umbrella ticket resolved with one fix.
+
+This trades the speed of subject-only matching for a cause the engineer can act on. It also
+prevents different subject lines from splitting the same cause into duplicate tickets.
+
+## Check the rule against examples
+
+The explorer runs the same code as the cause table. Change a tenant or channel to see the
+classification change. Subject edits alone cannot change the underlying cause.
+
+<DedupeExplorer />
+
+The examples show both failures of decision 0001: the same subject can hide different causes,
+and different subjects can describe the same cause. Unknown tenants have no established cause;
+they must not be auto-merged because their subjects happen to match.
+
+## Review and ownership
+
+Support should use this record in place of the old subject-only triage rule and the incident's
+one-fix claim. Engineering owns the two fixes. Support should verify new reports against the
+latest tenant configuration and re-render this page when its data changes. The layout marks
+pages stale after the configured review interval; a recent review date does not make an old
+export current. This page is a decision for this course exercise, not evidence that the live
+support process or product has already changed.
+
+<RenderStamp {signature} />
