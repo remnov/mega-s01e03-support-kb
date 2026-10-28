@@ -4,7 +4,7 @@ title: '0002 · Split #4471 by cause'
 owner: remnov
 status: accepted
 reviewed: 2026-10-28
-signature: 'Remigiusz Nowacki + Codex · S01E03'
+signature: 'v1.eyJzdWIiOiIyOTYzIiwiYXVkIjoiY2hhbGxlbmdlOndoYXQtaXQtc2hvd3MiLCJpYXQiOjE3OTMxODQ4NDUsImV4cCI6MTc5MzI3MTI0NX0.1ehEzf5nO4bKS8l8S9fyrzaso2YRfHYeQoJdRCtqlZg'
 ---
 
 <script>

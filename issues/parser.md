@@ -1,5 +1,9 @@
 # Shared parser reads day-first tenant dates as MM/DD — 379 reports in #4471
 
+Source ticket: #4471
+Cause: parser
+Reports: 379
+
 ## Scope and count
 
 379 distinct reports in ticket #4471 in the 2026-10-04 KB export classify as `parser`.

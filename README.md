@@ -16,7 +16,8 @@ further investigation. Counts describe the export, not the live desk.
 - [Recomputed audit](analysis.json)
 - [Original export conventions](EXPORT-README.md)
 
-The accepted decision 0001 remains unchanged. The old incident and triage pages now point to
+The new page uses the course-issued signature in its frontmatter. Its desk ref is computed
+by the original RenderStamp component. The accepted decision 0001 remains unchanged. The old incident and triage pages now point to
 the signed replacement decision. Exported classifier, data, components, and layout remain unchanged.
 
 ## Reproduce

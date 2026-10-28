@@ -1,5 +1,9 @@
 # Booking-v3 displays MM/DD to day-first tenants — 33 reports in #4471
 
+Source ticket: #4471
+Cause: hint
+Reports: 33
+
 ## Scope and count
 
 33 distinct reports in #4471 in the 2026-10-04 KB export classify as `hint`: channel `form`,
